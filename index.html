@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Chess</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+        #wrapper{
+            display:flex;
+            align-items:flex-start;
+        }
+    </style>
+    <style>
+        .chess-board { border-spacing: 0; border-collapse: collapse; }
+        .chess-board tbody{
+            display:flex;
+            flex-direction: column;
+        }
+        .chess-board tr{
+            display:flex;
+        }
+        .chess-board td, .chess-board th { width:50px; height:50px; display: flex; align-items: center; justify-content: center; }
+        td{ border:1px solid black;}
+        .chess-board .light { background: #bbb; }
+        .chess-board .dark { background: #555; }
+        .chess-board td.highlight{
+            background-color: yellow;
+        }
+        .chess-board td.highlight-red{
+            background-color: #ff0000;
+        }
+
+    </style>
+    <style>
+        #promotion{
+            display:flex;
+            width:200px;
+            border:3px solid red;
+            background-color:#555;
+            display:none;
+        }
+        #promotion.show{
+            display:flex;
+        }
+        #promotion > img{
+            width:50px;
+            height:50px;
+            display:none;
+        }
+        #promotion.black >img.black{
+            display:block;
+        }
+        #promotion.white>img.white{
+            display:block;
+        }
+        #promotion > img:nth-child(odd){
+            background-color:#bbb;
+        }
+    </style>
+    <style>
+        form{
+            display:flex;
+            flex-direction:column;
+            align-items:flex-start;
+            padding:10px;
+        }
+
+    </style>
+    <script src="./AntonChess.js"></script>
+
+</head>
+<body>
+<div id="wrapper">
+<table class="chess-board">
+    <tbody>
+    <tr>
+        <th></th>
+        <th>0</th>
+        <th>1</th>
+        <th>2</th>
+        <th>3</th>
+        <th>4</th>
+        <th>5</th>
+        <th>6</th>
+        <th>7</th>
+    </tr>
+    <tr id="r0">
+        <th>0</th>
+        <td data-r="0" data-c="0" class="light c0"></td>
+        <td data-r="0" data-c="1"  class="dark c1"></td>
+        <td data-r="0" data-c="2"  class="light c2"></td>
+        <td data-r="0" data-c="3"  class="dark c3"></td>
+        <td data-r="0" data-c="4"  class="light c4"></td>
+        <td data-r="0" data-c="5"  class="dark c5"></td>
+        <td data-r="0" data-c="6"  class="light c6"></td>
+        <td data-r="0" data-c="7"  class="dark c7"></td>
+    </tr>
+    <tr id="r1">
+        <th>1</th>
+        <td data-r="1" data-c="0" class="dark c0"></td>
+        <td data-r="1" data-c="1" class="light c1"></td>
+        <td data-r="1" data-c="2" class="dark c2"></td>
+        <td data-r="1" data-c="3" class="light c3"></td>
+        <td data-r="1" data-c="4" class="dark c4"></td>
+        <td data-r="1" data-c="5" class="light c5"></td>
+        <td data-r="1" data-c="6" class="dark c6"></td>
+        <td data-r="1" data-c="7" class="light c7"></td>
+    </tr>
+    <tr id="r2">
+        <th>2</th>
+        <td data-r="2" data-c="0" class="light c0"></td>
+        <td data-r="2" data-c="1" class="dark c1"></td>
+        <td data-r="2" data-c="2" class="light c2"></td>
+        <td data-r="2" data-c="3" class="dark c3"></td>
+        <td data-r="2" data-c="4" class="light c4"></td>
+        <td data-r="2" data-c="5" class="dark c5"></td>
+        <td data-r="2" data-c="6" class="light c6"></td>
+        <td data-r="2" data-c="7" class="dark c7"></td>
+    </tr>
+    <tr id="r3">
+        <th>3</th>
+        <td data-r="3" data-c="0" class="dark c0"></td>
+        <td data-r="3" data-c="1" class="light c1"></td>
+        <td data-r="3" data-c="2" class="dark c2"></td>
+        <td data-r="3" data-c="3" class="light c3"></td>
+        <td data-r="3" data-c="4" class="dark c4"></td>
+        <td data-r="3" data-c="5" class="light c5"></td>
+        <td data-r="3" data-c="6" class="dark c6"></td>
+        <td data-r="3" data-c="7" class="light c7"></td>
+    </tr>
+    <tr id="r4">
+        <th>4</th>
+        <td data-r="4" data-c="0" class="light c0"></td>
+        <td data-r="4" data-c="1" class="dark c1"></td>
+        <td data-r="4" data-c="2" class="light c2"></td>
+        <td data-r="4" data-c="3" class="dark c3"></td>
+        <td data-r="4" data-c="4" class="light c4"></td>
+        <td data-r="4" data-c="5" class="dark c5"></td>
+        <td data-r="4" data-c="6" class="light c6"></td>
+        <td data-r="4" data-c="7" class="dark c7"></td>
+    </tr>
+    <tr id="r5">
+        <th>5</th>
+        <td data-r="5" data-c="0" class="dark c0"></td>
+        <td data-r="5" data-c="1" class="light c1"></td>
+        <td data-r="5" data-c="2" class="dark c2"></td>
+        <td data-r="5" data-c="3" class="light c3"></td>
+        <td data-r="5" data-c="4" class="dark c4"></td>
+        <td data-r="5" data-c="5" class="light c5"></td>
+        <td data-r="5" data-c="6" class="dark c6"></td>
+        <td data-r="5" data-c="7" class="light c7"></td>
+    </tr>
+    <tr id="r6">
+        <th>6</th>
+        <td data-r="6" data-c="0" class="light c0"></td>
+        <td data-r="6" data-c="1" class="dark c1"></td>
+        <td data-r="6" data-c="2" class="light c2"></td>
+        <td data-r="6" data-c="3" class="dark c3"></td>
+        <td data-r="6" data-c="4" class="light c4"></td>
+        <td data-r="6" data-c="5" class="dark c5"></td>
+        <td data-r="6" data-c="6" class="light c6"></td>
+        <td data-r="6" data-c="7" class="dark c7"></td>
+    </tr>
+    <tr id="r7">
+        <th>7</th>
+        <td data-r="7" data-c="0" class="dark c0"></td>
+        <td data-r="7" data-c="1" class="light c1"></td>
+        <td data-r="7" data-c="2" class="dark c2"></td>
+        <td data-r="7" data-c="3" class="light c3"></td>
+        <td data-r="7" data-c="4" class="dark c4"></td>
+        <td data-r="7" data-c="5" class="light c5"></td>
+        <td data-r="7" data-c="6" class="dark c6"></td>
+        <td data-r="7" data-c="7" class="light c7"></td>
+    </tr>
+    </tbody>
+</table>
+<div id="promotion" class="">
+    <img data-piece="Q" class="white" src="./img/pieces/wq.svg">
+    <img data-piece="N" class="white" src="./img/pieces/wn.svg">
+    <img data-piece="B" class="white" src="./img/pieces/wb.svg">
+    <img data-piece="R" class="white" src="./img/pieces/wr.svg">
+
+    <img data-piece="q" class="black" src="./img/pieces/bq.svg">
+    <img data-piece="n" class="black" src="./img/pieces/bn.svg">
+    <img data-piece="b" class="black" src="./img/pieces/bb.svg">
+    <img data-piece="r" class="black" src="./img/pieces/br.svg">
+</div>
+</div>
+<form action="">
+    <div><input id="autoresponse" type="checkbox" checked> Auto random response</div>
+    <button id="forcemove">Force random move</button>
+</form>
+<script>
+    const chess = new AntonChess();
+
+    let autoMove = true;
+    function piece2icon(piece){
+        if(piece === null) return "";
+        if(piece === piece.toUpperCase()){
+            return `<img src="./img/pieces/w${piece.toLowerCase()}.svg">`;
+        }else{
+            return `<img src="./img/pieces/b${piece.toLowerCase()}.svg">`;
+        }
+
+    }
+
+    function render(){
+        for(r=0; r<8; r++){
+            for (c=0; c<8; c++){
+                document.querySelector(`#r${r}>.c${c}`).innerHTML = piece2icon(chess.board[r][c]);
+            }
+        }
+    }
+    render();
+
+    function choosePiece(white){
+        togglePromotionMenu("show", white);
+    }
+    function togglePromotionMenu(event, white){
+        const promotionDiv = document.querySelector("#promotion");
+        switch(event){
+            case "show":
+                if(white){
+                    promotionDiv.classList.add("show");
+                    promotionDiv.classList.add("white");
+                }else{
+                    promotionDiv.classList.add("show");
+                    promotionDiv.classList.add("black");
+                }
+                break;
+            case "hide":
+                promotionDiv.classList.remove("show");
+                promotionDiv.classList.remove("black");
+                promotionDiv.classList.remove("white");
+                break;
+            default:
+                promotionDiv.classList.toggle("show");
+                promotionDiv.classList.toggle("black");
+                promotionDiv.classList.toggle("white");
+                break;
+        }
+    }
+
+    let selectedPiece = [];
+    let movePosition = [];
+
+    document.querySelectorAll("td").forEach(cell => {
+        cell.addEventListener("click", e => {
+            //clear hightlights
+            document.querySelectorAll("td").forEach(cell => cell.classList.remove("highlight"));
+            document.querySelectorAll("td").forEach(cell => cell.classList.remove("highlight-red"));
+            togglePromotionMenu("hide");
+
+            const row = parseInt(cell.dataset.r);
+            const col = parseInt(cell.dataset.c);
+            const clickedPosition = [row, col];
+
+
+            if(selectedPiece.length > 0 && chess.getPiece(selectedPiece) === "p" && row===7){
+                movePosition = [...clickedPosition]
+                choosePiece(false);
+                return;
+            }
+            if(selectedPiece.length > 0 && chess.getPiece(selectedPiece) === "P" && row===0){
+                movePosition = [...clickedPosition]
+                choosePiece(true);
+                return;
+            }
+
+            if(selectedPiece.length>=2 && chess.move(selectedPiece, clickedPosition)){
+                if(autoMove) chess.makeRandomMove();
+                render();
+                selectedPiece = [];
+            }else{
+                let cell = e.target;
+                if(e.target.dataset.r === undefined){
+                    cell = e.target.parentNode;
+                }
+                cell.classList.add("highlight-red")
+
+                const possibleMoves = chess.findPossibleMoves([row, col])
+
+                possibleMoves.forEach(move => {
+                    document.querySelector(`#r${move[0]}>.c${move[1]}`).classList.add("highlight");
+                })
+                selectedPiece = [row, col];
+            }
+        })
+    })
+
+    document.querySelectorAll("#promotion > img").forEach(promotionPiece => {
+        promotionPiece.addEventListener("click", e => {
+            console.log(e.target)
+            const piece = e.target.dataset.piece;
+            movePosition.push(piece);
+            chess.move(selectedPiece, movePosition);
+            console.log(movePosition)
+            movePosition = [];
+            togglePromotionMenu("hide");
+            render();
+            selectedPiece = [];
+
+        })
+    })
+
+    document.querySelector("#forcemove").addEventListener("click", e => {
+        e.preventDefault();
+        chess.makeRandomMove();
+        render();
+    })
+    document.querySelector("#autoresponse").addEventListener("click", e => {
+        autoMove = e.target.checked;
+    })
+</script>
+</body>
+</html>
