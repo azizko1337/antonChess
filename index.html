@@ -36,6 +36,14 @@
         .chess-board td.highlight-red{
             background-color: #ff0000;
         }
+        .chess-board.rotate{
+            transform:rotate(180deg);
+            -webkit-box-reflect: revert;
+        }
+        .chess-board.rotate td{
+            transform:rotate(180deg);
+            -webkit-box-reflect: revert;
+        }
 
     </style>
     <style>
@@ -80,19 +88,7 @@
 <div id="wrapper">
 <table class="chess-board">
     <tbody>
-    <tr>
-        <th></th>
-        <th>0</th>
-        <th>1</th>
-        <th>2</th>
-        <th>3</th>
-        <th>4</th>
-        <th>5</th>
-        <th>6</th>
-        <th>7</th>
-    </tr>
     <tr id="r0">
-        <th>0</th>
         <td data-r="0" data-c="0" class="light c0"></td>
         <td data-r="0" data-c="1"  class="dark c1"></td>
         <td data-r="0" data-c="2"  class="light c2"></td>
@@ -103,7 +99,6 @@
         <td data-r="0" data-c="7"  class="dark c7"></td>
     </tr>
     <tr id="r1">
-        <th>1</th>
         <td data-r="1" data-c="0" class="dark c0"></td>
         <td data-r="1" data-c="1" class="light c1"></td>
         <td data-r="1" data-c="2" class="dark c2"></td>
@@ -114,7 +109,6 @@
         <td data-r="1" data-c="7" class="light c7"></td>
     </tr>
     <tr id="r2">
-        <th>2</th>
         <td data-r="2" data-c="0" class="light c0"></td>
         <td data-r="2" data-c="1" class="dark c1"></td>
         <td data-r="2" data-c="2" class="light c2"></td>
@@ -125,7 +119,6 @@
         <td data-r="2" data-c="7" class="dark c7"></td>
     </tr>
     <tr id="r3">
-        <th>3</th>
         <td data-r="3" data-c="0" class="dark c0"></td>
         <td data-r="3" data-c="1" class="light c1"></td>
         <td data-r="3" data-c="2" class="dark c2"></td>
@@ -136,7 +129,6 @@
         <td data-r="3" data-c="7" class="light c7"></td>
     </tr>
     <tr id="r4">
-        <th>4</th>
         <td data-r="4" data-c="0" class="light c0"></td>
         <td data-r="4" data-c="1" class="dark c1"></td>
         <td data-r="4" data-c="2" class="light c2"></td>
@@ -147,7 +139,6 @@
         <td data-r="4" data-c="7" class="dark c7"></td>
     </tr>
     <tr id="r5">
-        <th>5</th>
         <td data-r="5" data-c="0" class="dark c0"></td>
         <td data-r="5" data-c="1" class="light c1"></td>
         <td data-r="5" data-c="2" class="dark c2"></td>
@@ -158,7 +149,6 @@
         <td data-r="5" data-c="7" class="light c7"></td>
     </tr>
     <tr id="r6">
-        <th>6</th>
         <td data-r="6" data-c="0" class="light c0"></td>
         <td data-r="6" data-c="1" class="dark c1"></td>
         <td data-r="6" data-c="2" class="light c2"></td>
@@ -169,7 +159,6 @@
         <td data-r="6" data-c="7" class="dark c7"></td>
     </tr>
     <tr id="r7">
-        <th>7</th>
         <td data-r="7" data-c="0" class="dark c0"></td>
         <td data-r="7" data-c="1" class="light c1"></td>
         <td data-r="7" data-c="2" class="dark c2"></td>
@@ -196,6 +185,7 @@
 <form action="">
     <div><input id="autoresponse" type="checkbox" checked> Auto random response</div>
     <button id="forcemove">Force random move</button>
+    <button id="rotate">Rotate board</button>
 </form>
 <script>
     const chess = new AntonChess();
@@ -317,6 +307,10 @@
     })
     document.querySelector("#autoresponse").addEventListener("click", e => {
         autoMove = e.target.checked;
+    })
+    document.querySelector("#rotate").addEventListener("click", e => {
+        e.preventDefault()
+        document.querySelector(".chess-board").classList.toggle("rotate");
     })
 </script>
 </body>
