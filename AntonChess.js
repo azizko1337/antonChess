@@ -1,5 +1,69 @@
+const config = {
+    pieceWeights: {
+        p: 10,
+        n: 30,
+        b: 32,
+        r: 50,
+        q: 100,
+        king: 10000
+    },
+    positionWeights: {
+        p: [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [10, 10, 10, 10, 7, 7, 7, 7],
+            [0, 0, 10, 10, 10, 10, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 10, 10, 10, 10, 0, 0],
+            [10, 10, 10, 10, 7, 7, 7, 7],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+
+        ],
+        n: [
+            [0, 0, 5, 5, 5, 5, 0, 0],
+            [0, 5, 7, 10, 10, 7, 5, 0],
+            [0, 5, 10, 10, 10, 10, 5, 0],
+            [0, 5, 10, 10, 10, 10, 5, 0],
+            [0, 5, 10, 10, 10, 10, 5, 0],
+            [0, 5, 10, 10, 10, 10, 5, 0],
+            [0, 5, 7, 10, 10, 7, 5, 0],
+            [0, 0, 5, 5, 5, 5, 0, 0],
+        ],
+        b: [
+            [10, 10, 10, 0, 0, 10, 10, 10],
+            [10, 10, 10, 0, 0, 10, 10, 10],
+            [10, 10, 7, 0, 0, 7, 10, 10],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [10, 10, 7, 0, 0, 7, 10, 10],
+            [10, 10, 10, 0, 0, 10, 10, 10],
+            [10, 10, 10, 0, 0, 10, 10, 10],
+        ],
+        r: [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+        ],
+        q: [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+        ]
+    }
+}
+
 class AntonChess{
-    undoMemory = "";
+    undoMemory = [];
     board = [
         [null, null, null, null, null, null, null, null],
         [null, null, null, null, null, null, null, null],
@@ -57,22 +121,72 @@ class AntonChess{
     }
 
     makeCopy(){
-        this.undoMemory = JSON.stringify({
+        this.undoMemory.push(JSON.stringify({
             board: this.board,
             white: this.white,
             doTheKingsMoved: this.doTheKingsMoved,
             doTheRooksMoved: this.doTheRooksMoved,
             enPassant: this.enPassant
-        })
+        }))
     }
     undo(){
-        if(this.undoMemory === "") return;
-        const snap = JSON.parse(this.undoMemory);
+        if(this.undoMemory.length === 0) return;
+        const snap = JSON.parse(this.undoMemory[this.undoMemory.length-1]);
+        this.undoMemory.splice(this.undoMemory.length-1, 1)
+
         this.board = snap.board;
         this.white = snap.white;
         this.doTheKingsMoved = snap.doTheKingsMoved;
         this.doTheRooksMoved = snap.doTheRooksMoved;
         this.enPassant = snap.enPassant;
+    }
+
+    getAllMoves(){
+        const myPiecesPos = [];
+        for(let r=0; r<8; r++){
+            for(let c=0; c<8; c++){
+                const piece = this.board[r][c];
+                if(this.white){
+                    if(this.isPieceWhite(piece)){
+                        myPiecesPos.push([r, c])
+                    }
+                }else{
+                    if(!this.isPieceWhite(piece)){
+                        myPiecesPos.push([r, c])
+                    }
+                }
+            }
+        }
+
+        const allPossibleMoves = [];
+        for(const piecePos of myPiecesPos){
+            const possibleMoves = this.findPossibleMoves(piecePos);
+            const removeDuplicates = [];
+            for(const possibleMove of possibleMoves){
+                const possibleMoveStr = JSON.stringify(possibleMove);
+                if(possibleMoveStr in removeDuplicates) continue;
+                removeDuplicates.push(possibleMoveStr);
+                allPossibleMoves.push([piecePos, possibleMove]);
+            }
+        }
+
+        return allPossibleMoves;
+    }
+    minimax(depth){
+        if(depth===0) return 1;
+
+        // this.makeCopy();
+        const moves = this.getAllMoves();
+        let numPositions = 0;
+
+        for(const move of moves){
+            this.makeCopy();
+            this.move(move[0], move[1], false);
+            numPositions += this.minimax(depth-1);
+            this.undo();
+        }
+        //
+        return numPositions;
     }
 
     isGameOver(){
@@ -108,13 +222,13 @@ class AntonChess{
         }
     }
     isPositionAttacked(position){
-        return (this.isPositionInPositionlist(this.positionsAttackedByOpp, position));
+        return (this.isPositionInPositionlist(this.positionsAttackedByOpp, position, true));
     }
-    isPositionInPositionlist(moveList, move){
+    isPositionInPositionlist(moveList, move, ignoreThird = false){
         for(const moveFromList of moveList){
-            if(moveFromList.length === move?.length){
+            if(moveFromList.length === move?.length || ignoreThird){
                 let areMovesTheSame = true;
-                for(let i=0; i<moveFromList.length; i++){
+                for(let i=0; i < (ignoreThird ? 2 : moveFromList.length); i++){
                     if(moveFromList[i] !== move[i]){
                         areMovesTheSame = false;
                     }
@@ -483,6 +597,7 @@ class AntonChess{
         }
         return legalMoves;
     }
+
     makeRandomMove(){
         const myPiecesPos = [];
         for(let r=0; r<8; r++){
@@ -522,14 +637,15 @@ class AntonChess{
                 }
             }
         }
-        return this.isPositionInPositionlist(this.positionsAttackedByOpp, kingPosition);
+
+        if(kingPosition === undefined) return true;
+        return this.isPositionInPositionlist(this.positionsAttackedByOpp, kingPosition, true);
     }
 
     move(oldPosition, newPosition, simulation = false){
         let possibleMoves = []
         if(!simulation) possibleMoves = this.findPossibleMoves(oldPosition);
         if(simulation || this.isPositionInPositionlist(possibleMoves, newPosition)){
-            if(!simulation) this.makeCopy();
             const piece = this.board[oldPosition[0]][oldPosition[1]];
 
             //en passant
@@ -595,12 +711,26 @@ class AntonChess{
             if(!simulation) this.calcAttackedPositions();
 
             //TO CHANGEEEEEEEEEEEEEEEEEEEEE
-            if(!simulation && this.isGameOver()){
-                alert(`WYGRALY ${this.white ? "CZARNE" : "BIALE"}`);
-            }
+            // if(!simulation && this.isGameOver()){
+            //     alert(`WYGRALY ${this.white ? "CZARNE" : "BIALE"}`);
+            // }
 
             return true;
         }
         return false;
     }
 }
+
+const chess = new AntonChess();
+let timestamp = Date.now();
+console.log(`Depth: 1 Nodes: ${chess.minimax(1)} - ${Date.now()-timestamp}ms`)
+timestamp = Date.now();
+console.log(`Depth: 2 Nodes: ${chess.minimax(2)} - ${Date.now()-timestamp}ms`)
+timestamp = Date.now();
+console.log(`Depth: 3 Nodes: ${chess.minimax(3)} - ${Date.now()-timestamp}ms`)
+timestamp = Date.now();
+console.log(`Depth: 4 Nodes: ${chess.minimax(4)} - ${Date.now()-timestamp}ms`)
+timestamp = Date.now();
+console.log(`Depth: 5 Nodes: ${chess.minimax(5)} - ${Date.now()-timestamp}ms`)
+timestamp = Date.now();
+console.log(`Depth: 6 Nodes: ${chess.minimax(6)} - ${Date.now()-timestamp}ms`)
