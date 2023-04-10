@@ -721,6 +721,7 @@ class AntonChess{
     }
 }
 
+/*
 const chess = new AntonChess();
 let timestamp = Date.now();
 console.log(`Depth: 1 Nodes: ${chess.minimax(1)} - ${Date.now()-timestamp}ms`)
@@ -734,3 +735,4 @@ timestamp = Date.now();
 console.log(`Depth: 5 Nodes: ${chess.minimax(5)} - ${Date.now()-timestamp}ms`)
 timestamp = Date.now();
 console.log(`Depth: 6 Nodes: ${chess.minimax(6)} - ${Date.now()-timestamp}ms`)
+*/
